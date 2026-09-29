@@ -219,17 +219,19 @@ export const RecommendationResultPage: React.FC = () => {
       <div
         style={{
           display: 'flex',
-          gap: '0.4rem',
+          gap: '0.45rem',
           flexWrap: 'wrap',
-          padding: '0.5rem',
-          backgroundColor: 'var(--bg-surface)',
-          borderRadius: 'var(--radius-lg)',
+          padding: '0.6rem',
+          backgroundColor: 'var(--glass-bg)',
+          backdropFilter: 'var(--glass-blur)',
+          WebkitBackdropFilter: 'var(--glass-blur)',
+          borderRadius: 'var(--radius-xl)',
           border: '1px solid var(--border)',
-          marginBottom: '1.5rem',
+          marginBottom: '1.75rem',
           position: 'sticky',
-          top: '0.75rem',
+          top: 'calc(var(--header-height) + 8px)',
           zIndex: 20,
-          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
+          boxShadow: 'var(--shadow-md)',
         }}
       >
         {[
@@ -251,15 +253,16 @@ export const RecommendationResultPage: React.FC = () => {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '0.45rem',
-                padding: '0.55rem 0.9rem',
-                borderRadius: 'var(--radius-md)',
+                padding: '0.55rem 0.95rem',
+                borderRadius: 'var(--radius-full)',
                 fontSize: '0.8125rem',
-                fontWeight: isActive ? 700 : 500,
-                border: 'none',
+                fontWeight: isActive ? 700 : 600,
+                border: isActive ? '1px solid var(--primary-border)' : '1px solid transparent',
                 cursor: 'pointer',
-                transition: 'all 0.15s ease',
-                backgroundColor: isActive ? 'var(--primary)' : 'transparent',
+                transition: 'all var(--transition-fast)',
+                background: isActive ? 'linear-gradient(135deg, var(--primary) 0%, #0d7857 100%)' : 'transparent',
                 color: isActive ? '#ffffff' : 'var(--text-body)',
+                boxShadow: isActive ? '0 2px 8px var(--primary-focus)' : 'none',
               }}
             >
               {tab.icon}
@@ -268,7 +271,7 @@ export const RecommendationResultPage: React.FC = () => {
                 <span
                   style={{
                     fontSize: '0.68rem',
-                    padding: '0.1rem 0.4rem',
+                    padding: '0.12rem 0.45rem',
                     borderRadius: 'var(--radius-full)',
                     backgroundColor: isActive ? 'rgba(255, 255, 255, 0.25)' : 'var(--bg-subtle)',
                     color: isActive ? '#ffffff' : 'var(--text-muted)',

@@ -27,18 +27,19 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
       }}
     >
       <div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <h1 style={{ margin: 0, fontWeight: 700 }}>{title}</h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <h1 style={{ margin: 0, fontFamily: 'Outfit, sans-serif', fontWeight: 800, letterSpacing: '-0.025em' }}>{title}</h1>
           {badgeText && (
             <span
               style={{
                 fontSize: '0.75rem',
-                fontWeight: 600,
+                fontWeight: 700,
                 backgroundColor: 'var(--primary-light)',
-                color: 'var(--primary)',
-                padding: '0.2rem 0.6rem',
+                color: 'var(--primary-vivid)',
+                padding: '0.25rem 0.75rem',
                 borderRadius: 'var(--radius-full)',
                 border: '1px solid var(--primary-border)',
+                letterSpacing: '0.02em',
               }}
             >
               {badgeText}
@@ -46,12 +47,12 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
           )}
         </div>
         {description && (
-          <p style={{ color: 'var(--text-muted)', marginTop: '0.35rem', maxWidth: '800px', fontSize: '0.95rem' }}>
+          <p style={{ color: 'var(--text-muted)', marginTop: '0.4rem', maxWidth: '820px', fontSize: '0.9375rem', lineHeight: 1.5 }}>
             {description}
           </p>
         )}
       </div>
-      {actions && <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>{actions}</div>}
+      {actions && <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>{actions}</div>}
     </div>
   );
 };

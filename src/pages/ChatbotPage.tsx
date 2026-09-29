@@ -288,18 +288,18 @@ export const ChatbotPage: React.FC = () => {
 
       {/* Preset Prompts Strip */}
       <div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.76rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-            <Sparkles size={14} style={{ color: 'var(--primary)' }} /> Predefined Inquiries
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            <Sparkles size={14} style={{ color: 'var(--primary-vivid)' }} /> Quick Science Inquiries
           </div>
-          <span style={{ fontSize: '0.72rem', color: 'var(--text-subtle)' }}>Click any prompt to start</span>
+          <span style={{ fontSize: '0.74rem', color: 'var(--text-subtle)' }}>Click any prompt to consult PackBot</span>
         </div>
         <div
           style={{
             display: 'flex',
-            gap: '0.5rem',
+            gap: '0.6rem',
             overflowX: 'auto',
-            paddingBottom: '0.4rem',
+            paddingBottom: '0.5rem',
           }}
         >
           {chatPromptPresets.map((preset) => (
@@ -308,34 +308,34 @@ export const ChatbotPage: React.FC = () => {
               type="button"
               onClick={() => handlePresetClick(preset)}
               style={{
-                backgroundColor: '#ffffff',
+                backgroundColor: 'var(--bg-surface)',
                 border: '1px solid var(--border)',
                 borderRadius: 'var(--radius-full)',
-                padding: '0.35rem 0.85rem',
-                fontSize: '0.78rem',
+                padding: '0.4rem 0.95rem',
+                fontSize: '0.8rem',
                 color: 'var(--text-main)',
                 fontWeight: 600,
                 cursor: 'pointer',
                 whiteSpace: 'nowrap',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.4rem',
-                boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
-                transition: 'all 0.15s ease',
+                gap: '0.45rem',
+                boxShadow: 'var(--shadow-xs)',
+                transition: 'all var(--transition-fast)',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = 'var(--primary)';
-                e.currentTarget.style.backgroundColor = 'var(--primary-light)';
+                e.currentTarget.style.borderColor = 'var(--primary-border)';
+                e.currentTarget.style.backgroundColor = 'var(--bg-subtle)';
                 e.currentTarget.style.transform = 'translateY(-1px)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.borderColor = 'var(--border)';
-                e.currentTarget.style.backgroundColor = '#ffffff';
+                e.currentTarget.style.backgroundColor = 'var(--bg-surface)';
                 e.currentTarget.style.transform = 'translateY(0)';
               }}
             >
               <span>{preset.title}</span>
-              <ChevronRight size={12} style={{ color: 'var(--text-subtle)' }} />
+              <ChevronRight size={13} style={{ color: 'var(--primary-vivid)' }} />
             </button>
           ))}
         </div>
@@ -567,7 +567,7 @@ export const ChatbotPage: React.FC = () => {
             flexDirection: 'column',
             padding: 0,
             overflow: 'hidden',
-            backgroundColor: '#ffffff',
+            backgroundColor: 'var(--bg-surface)',
             borderRadius: 'var(--radius-lg)',
             boxShadow: 'var(--shadow-sm)',
             border: '1px solid var(--border)',
@@ -576,31 +576,31 @@ export const ChatbotPage: React.FC = () => {
           {/* Chat Stream Header */}
           <div
             style={{
-              padding: '0.85rem 1.35rem',
+              padding: '0.95rem 1.5rem',
               borderBottom: '1px solid var(--border)',
-              backgroundColor: '#f8fafc',
+              backgroundColor: 'var(--bg-subtle)',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
               <div
                 style={{
                   width: '10px',
                   height: '10px',
                   borderRadius: '50%',
-                  backgroundColor: '#22c55e',
-                  boxShadow: '0 0 0 3px rgba(34, 197, 94, 0.2)',
+                  backgroundColor: 'var(--primary-vivid)',
+                  boxShadow: '0 0 0 3px var(--primary-focus)',
                 }}
               />
-              <span style={{ fontWeight: 700, fontSize: '0.92rem', color: 'var(--text-main)' }}>
+              <span style={{ fontWeight: 800, fontSize: '0.95rem', color: 'var(--text-main)', fontFamily: 'Outfit, sans-serif' }}>
                 {activeSession.title}
               </span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 500 }}>
-                PackBot Live Food Science Engine · SIH26236
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                PackBot BioTech Engine · SIH26236
               </span>
             </div>
           </div>
@@ -614,7 +614,7 @@ export const ChatbotPage: React.FC = () => {
               display: 'flex',
               flexDirection: 'column',
               gap: '1.5rem',
-              backgroundColor: '#f8fafc',
+              backgroundColor: 'var(--bg-app)',
             }}
           >
             {messages.map((msg) => {

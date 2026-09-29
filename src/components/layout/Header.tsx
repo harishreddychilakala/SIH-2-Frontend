@@ -20,6 +20,8 @@ import {
   Settings,
   ShieldCheck,
   X,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import { settingsService } from '../../services/settingsService';
 import { useAuth } from '../../context/AuthContext';
@@ -50,6 +52,11 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar: _onToggleSideba
   const [showQuickSearch, setShowQuickSearch] = useState(false);
   const [showMobileNav, setShowMobileNav] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    const saved = settingsService.getSettings().theme;
+    return (saved === 'dark' || saved === 'light') ? saved : 'light';
+  });
+
   const notifRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
@@ -59,7 +66,24 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar: _onToggleSideba
 
   useEffect(() => {
     setNotifications(settingsService.getNotifications());
-  }, []);
+    if (theme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+    }
+  }, [theme]);
+
+  const toggleTheme = () => {
+    const nextTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(nextTheme);
+    const currentSettings = settingsService.getSettings();
+    settingsService.saveSettings({ ...currentSettings, theme: nextTheme });
+    if (nextTheme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+    }
+  };
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -74,10 +98,14 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar: _onToggleSideba
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Keyboard shortcut: press "/" to open search
+  // Keyboard shortcut: press "/" or "cmd+k" to open search
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === '/' && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+      if (
+        (e.key === '/' || (e.key === 'k' && (e.metaKey || e.ctrlKey))) &&
+        document.activeElement?.tagName !== 'INPUT' &&
+        document.activeElement?.tagName !== 'TEXTAREA'
+      ) {
         e.preventDefault();
         setShowQuickSearch(true);
       }
@@ -112,13 +140,13 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar: _onToggleSideba
   const getPageInfo = () => {
     const path = location.pathname;
     if (path.startsWith('/dashboard')) return { title: 'Dashboard', path: 'Dashboard' };
-    if (path.startsWith('/recommendation/')) return { title: 'Recommendation Results', path: 'Recommendation / Results' };
-    if (path.startsWith('/recommend')) return { title: 'Generate Recommendation', path: 'New Recommendation' };
-    if (path.startsWith('/chat')) return { title: 'AI Packaging Assistant', path: 'AI Assistant / PackBot' };
-    if (path.startsWith('/compare')) return { title: 'Material Comparison', path: 'Material Comparison' };
+    if (path.startsWith('/recommendation/')) return { title: 'Recommendation Results', path: 'Results' };
+    if (path.startsWith('/recommend')) return { title: 'Generate Recommendation', path: 'Recommendation Engine' };
+    if (path.startsWith('/chat')) return { title: 'AI Packaging Assistant', path: 'PackBot AI' };
+    if (path.startsWith('/compare')) return { title: 'Material Comparison', path: 'Comparator' };
     if (path.startsWith('/commodities')) return { title: 'Food Commodities Catalog', path: 'Commodities' };
     if (path.startsWith('/materials')) return { title: 'Packaging Materials Library', path: 'Materials' };
-    if (path.startsWith('/history')) return { title: 'Recommendation History', path: 'History' };
+    if (path.startsWith('/history')) return { title: 'Recommendation History', path: 'History Ledger' };
     if (path.startsWith('/settings')) return { title: 'System Settings & Info', path: 'Settings' };
     return { title: 'PackSmart AI', path: 'Overview' };
   };
@@ -144,7 +172,9 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar: _onToggleSideba
       <header
         style={{
           height: 'var(--header-height)',
-          backgroundColor: 'var(--bg-surface)',
+          backgroundColor: 'var(--glass-bg)',
+          backdropFilter: 'var(--glass-blur)',
+          WebkitBackdropFilter: 'var(--glass-blur)',
           borderBottom: '1px solid var(--border)',
           position: 'sticky',
           top: 0,
@@ -152,12 +182,14 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar: _onToggleSideba
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '0 1.25rem',
+          padding: '0 1.5rem',
           gap: '1rem',
+          boxShadow: 'var(--shadow-xs)',
+          transition: 'all var(--transition-normal)',
         }}
       >
         {/* ── LEFT: brand logo + breadcrumb ── */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexShrink: 0 }}>
           <button
             type="button"
             onClick={() => setShowMobileNav((prev) => !prev)}
@@ -174,32 +206,33 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar: _onToggleSideba
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '0.65rem',
+              gap: '0.75rem',
               textDecoration: 'none',
             }}
           >
             <div
               style={{
-                width: '36px',
-                height: '36px',
+                width: '38px',
+                height: '38px',
                 borderRadius: 'var(--radius-md)',
-                backgroundColor: 'var(--primary)',
+                background: 'var(--gradient-biotech)',
                 color: '#ffffff',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: '0 2px 6px rgba(18, 84, 56, 0.3)',
+                boxShadow: '0 4px 12px var(--primary-glow)',
                 flexShrink: 0,
+                border: '1px solid rgba(255,255,255,0.2)',
               }}
             >
-              <ShieldCheck size={20} />
+              <ShieldCheck size={22} />
             </div>
             <div>
-              <div style={{ fontWeight: 800, fontSize: '1.05rem', color: 'var(--text-main)', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
-                PackSmart<span style={{ color: 'var(--teal-600)', marginLeft: '1px' }}>AI</span>
+              <div style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 800, fontSize: '1.15rem', color: 'var(--text-main)', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
+                PackSmart<span style={{ color: 'var(--primary-vivid)', marginLeft: '1px' }}>AI</span>
               </div>
-              <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.04em' }}>
-                FSSAI READY
+              <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                BioTech Decision Engine
               </div>
             </div>
           </Link>
@@ -209,7 +242,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar: _onToggleSideba
               width: '1px',
               height: '24px',
               backgroundColor: 'var(--border)',
-              margin: '0 0.15rem',
+              margin: '0 0.25rem',
             }}
             className="header-breadcrumb-divider"
           />
@@ -218,7 +251,19 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar: _onToggleSideba
             style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.8125rem' }}
             className="header-breadcrumb-item"
           >
-            <span style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>{pageInfo.path}</span>
+            <span
+              style={{
+                fontWeight: 700,
+                color: 'var(--text-muted)',
+                backgroundColor: 'var(--bg-subtle)',
+                padding: '0.2rem 0.6rem',
+                borderRadius: 'var(--radius-full)',
+                border: '1px solid var(--border)',
+                fontSize: '0.75rem',
+              }}
+            >
+              {pageInfo.path}
+            </span>
           </div>
         </div>
 
@@ -228,9 +273,14 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar: _onToggleSideba
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '0.15rem',
+            gap: '0.25rem',
             flex: 1,
             justifyContent: 'center',
+            background: 'var(--bg-subtle)',
+            padding: '0.25rem 0.4rem',
+            borderRadius: 'var(--radius-full)',
+            border: '1px solid var(--border)',
+            maxWidth: '660px',
           }}
           aria-label="Main navigation"
         >
@@ -245,13 +295,14 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar: _onToggleSideba
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.4rem',
-                  padding: '0.45rem 0.85rem',
-                  borderRadius: 'var(--radius-md)',
-                  fontSize: '0.84rem',
+                  padding: '0.4rem 0.75rem',
+                  borderRadius: 'var(--radius-full)',
+                  fontSize: '0.82rem',
                   fontWeight: active ? 700 : 500,
-                  color: active ? 'var(--primary)' : 'var(--text-muted)',
-                  backgroundColor: active ? 'var(--primary-light)' : 'transparent',
-                  border: active ? '1px solid var(--primary-border)' : '1px solid transparent',
+                  color: active ? 'var(--text-main)' : 'var(--text-muted)',
+                  backgroundColor: active ? 'var(--bg-surface)' : 'transparent',
+                  boxShadow: active ? '0 2px 6px rgba(0,0,0,0.06)' : 'none',
+                  border: active ? '1px solid var(--border)' : '1px solid transparent',
                   textDecoration: 'none',
                   whiteSpace: 'nowrap',
                   transition: 'all var(--transition-fast)',
@@ -259,15 +310,44 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar: _onToggleSideba
                 className="top-nav-link"
                 aria-current={active ? 'page' : undefined}
               >
-                <Icon size={15} style={{ flexShrink: 0 }} />
+                <Icon size={14} style={{ flexShrink: 0, color: active ? 'var(--primary-vivid)' : 'currentColor' }} />
                 <span>{label}</span>
               </Link>
             );
           })}
         </nav>
 
-        {/* ── RIGHT: search + new rec + bell + user ── */}
+        {/* ── RIGHT: theme toggle + search + new rec + bell + user ── */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexShrink: 0 }}>
+          
+          {/* Theme Toggle Button */}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="btn btn-ghost btn-sm"
+            style={{
+              width: '36px',
+              height: '36px',
+              borderRadius: 'var(--radius-full)',
+              padding: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'var(--text-main)',
+              border: '1px solid var(--border)',
+              backgroundColor: 'var(--bg-subtle)',
+              transition: 'all var(--transition-fast)',
+            }}
+            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {theme === 'dark' ? (
+              <Sun size={17} style={{ color: '#fbbf24' }} />
+            ) : (
+              <Moon size={17} style={{ color: 'var(--primary)' }} />
+            )}
+          </button>
+
           {/* Quick search */}
           <button
             type="button"
@@ -277,14 +357,14 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar: _onToggleSideba
               color: 'var(--text-muted)',
               display: 'flex',
               alignItems: 'center',
-              gap: '0.4rem',
-              padding: '0.45rem 0.85rem',
+              gap: '0.45rem',
+              padding: '0.4rem 0.85rem',
               borderRadius: 'var(--radius-full)',
             }}
             aria-label="Quick search"
-            title="Quick search (press /)"
+            title="Quick search (press / or ⌘K)"
           >
-            <Search size={15} />
+            <Search size={14} />
             <span style={{ fontSize: '0.8125rem' }}>Search</span>
             <kbd
               style={{
@@ -292,8 +372,10 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar: _onToggleSideba
                 backgroundColor: 'var(--bg-subtle)',
                 border: '1px solid var(--border)',
                 borderRadius: '4px',
-                padding: '0.1rem 0.3rem',
+                padding: '0.1rem 0.35rem',
                 color: 'var(--text-subtle)',
+                fontFamily: 'inherit',
+                fontWeight: 600,
               }}
             >
               /
@@ -304,9 +386,9 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar: _onToggleSideba
           <Link
             to="/recommend"
             className="btn btn-primary btn-sm"
-            style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.45rem 1rem', whiteSpace: 'nowrap' }}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.45rem 1rem', whiteSpace: 'nowrap', borderRadius: 'var(--radius-full)' }}
           >
-            <Sparkles size={15} />
+            <Sparkles size={14} />
             <span>New Rec</span>
           </Link>
 
@@ -318,27 +400,29 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar: _onToggleSideba
               className="btn btn-ghost btn-sm"
               style={{
                 position: 'relative',
-                width: '40px',
-                height: '40px',
+                width: '36px',
+                height: '36px',
                 padding: 0,
                 borderRadius: '50%',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 color: 'var(--text-muted)',
+                border: '1px solid var(--border)',
+                backgroundColor: 'var(--bg-subtle)',
               }}
               aria-label="View notifications"
             >
-              <Bell size={19} />
+              <Bell size={17} />
               {unreadCount > 0 && (
                 <span
                   style={{
                     position: 'absolute',
-                    top: '7px',
-                    right: '7px',
+                    top: '6px',
+                    right: '6px',
                     width: '8px',
                     height: '8px',
-                    backgroundColor: 'var(--primary)',
+                    backgroundColor: 'var(--primary-vivid)',
                     borderRadius: '50%',
                     boxShadow: '0 0 0 2px var(--bg-surface)',
                   }}
@@ -369,10 +453,10 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar: _onToggleSideba
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    backgroundColor: 'var(--bg-app)',
+                    backgroundColor: 'var(--bg-subtle)',
                   }}
                 >
-                  <div style={{ fontWeight: 600, fontSize: '0.875rem', color: 'var(--text-main)' }}>
+                  <div style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--text-main)' }}>
                     Notifications ({unreadCount} unread)
                   </div>
                   {unreadCount > 0 && (
@@ -382,9 +466,9 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar: _onToggleSideba
                       style={{
                         background: 'none',
                         border: 'none',
-                        color: 'var(--primary)',
+                        color: 'var(--primary-vivid)',
                         fontSize: '0.75rem',
-                        fontWeight: 600,
+                        fontWeight: 700,
                         cursor: 'pointer',
                       }}
                     >
@@ -464,7 +548,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar: _onToggleSideba
                     width: '26px',
                     height: '26px',
                     borderRadius: '50%',
-                    backgroundColor: 'var(--primary)',
+                    background: 'var(--gradient-biotech)',
                     color: '#ffffff',
                     display: 'flex',
                     alignItems: 'center',
@@ -533,7 +617,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar: _onToggleSideba
                       type="button"
                       onClick={handleLogout}
                       className="btn btn-ghost btn-sm"
-                      style={{ justifyContent: 'flex-start', width: '100%', fontSize: '0.8125rem', color: 'var(--danger)' }}
+                      style={{ justifyContent: 'flex-start', width: '100%', fontSize: '0.8125rem', color: 'var(--danger-text)' }}
                     >
                       <LogOut size={14} /> Sign Out
                     </button>
@@ -582,13 +666,13 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar: _onToggleSideba
                   borderRadius: 'var(--radius-md)',
                   fontSize: '0.9rem',
                   fontWeight: active ? 700 : 500,
-                  color: active ? 'var(--primary)' : 'var(--text-main)',
+                  color: active ? 'var(--primary-vivid)' : 'var(--text-main)',
                   backgroundColor: active ? 'var(--primary-light)' : 'transparent',
                   border: active ? '1px solid var(--primary-border)' : '1px solid transparent',
                   textDecoration: 'none',
                 }}
               >
-                <Icon size={18} style={{ color: active ? 'var(--primary)' : 'var(--text-muted)' }} />
+                <Icon size={18} style={{ color: active ? 'var(--primary-vivid)' : 'var(--text-muted)' }} />
                 <span>{label}</span>
               </Link>
             );
@@ -601,12 +685,12 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar: _onToggleSideba
         <div className="modal-overlay" onClick={() => setShowQuickSearch(false)}>
           <div
             className="modal-container"
-            style={{ maxWidth: '520px' }}
+            style={{ maxWidth: '540px' }}
             onClick={(e) => e.stopPropagation()}
           >
             <form onSubmit={handleSearchSubmit} style={{ padding: '1.25rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                <Search size={20} style={{ color: 'var(--primary)', flexShrink: 0 }} />
+                <Search size={20} style={{ color: 'var(--primary-vivid)', flexShrink: 0 }} />
                 <input
                   type="text"
                   autoFocus
@@ -614,13 +698,13 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar: _onToggleSideba
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search food commodities or packaging materials..."
                   className="input-control"
-                  style={{ border: 'none', boxShadow: 'none', fontSize: '1.05rem', padding: '0.25rem 0' }}
+                  style={{ border: 'none', boxShadow: 'none', fontSize: '1.05rem', padding: '0.25rem 0', background: 'transparent' }}
                 />
               </div>
 
               <div style={{ marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                  Press Enter to search commodities catalog
+                  Press Enter to search catalog
                 </span>
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
                   <button type="button" className="btn btn-secondary btn-sm" onClick={() => setShowQuickSearch(false)}>
@@ -639,9 +723,8 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar: _onToggleSideba
       <style>{`
         /* Top nav link hover state */
         .top-nav-link:hover {
-          color: var(--primary) !important;
-          background-color: var(--primary-light) !important;
-          border-color: var(--primary-border) !important;
+          color: var(--text-main) !important;
+          background-color: var(--bg-hover) !important;
         }
 
         /* Responsive: hide center nav, show mobile hamburger */
@@ -674,3 +757,4 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar: _onToggleSideba
     </>
   );
 };
+
