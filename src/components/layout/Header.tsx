@@ -137,21 +137,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar: _onToggleSideba
     setNotifications(updated);
   };
 
-  const getPageInfo = () => {
-    const path = location.pathname;
-    if (path.startsWith('/dashboard')) return { title: 'Dashboard', path: 'Dashboard' };
-    if (path.startsWith('/recommendation/')) return { title: 'Recommendation Results', path: 'Results' };
-    if (path.startsWith('/recommend')) return { title: 'Generate Recommendation', path: 'Recommendation Engine' };
-    if (path.startsWith('/chat')) return { title: 'AI Packaging Assistant', path: 'PackBot AI' };
-    if (path.startsWith('/compare')) return { title: 'Material Comparison', path: 'Comparator' };
-    if (path.startsWith('/commodities')) return { title: 'Food Commodities Catalog', path: 'Commodities' };
-    if (path.startsWith('/materials')) return { title: 'Packaging Materials Library', path: 'Materials' };
-    if (path.startsWith('/history')) return { title: 'Recommendation History', path: 'History Ledger' };
-    if (path.startsWith('/settings')) return { title: 'System Settings & Info', path: 'Settings' };
-    return { title: 'PackSmart AI', path: 'Overview' };
-  };
 
-  const pageInfo = getPageInfo();
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -188,7 +174,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar: _onToggleSideba
           transition: 'all var(--transition-normal)',
         }}
       >
-        {/* ── LEFT: brand logo + breadcrumb ── */}
+        {/* ── LEFT: brand logo ── */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexShrink: 0 }}>
           <button
             type="button"
@@ -236,35 +222,6 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar: _onToggleSideba
               </div>
             </div>
           </Link>
-
-          <div
-            style={{
-              width: '1px',
-              height: '24px',
-              backgroundColor: 'var(--border)',
-              margin: '0 0.25rem',
-            }}
-            className="header-breadcrumb-divider"
-          />
-
-          <div
-            style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.8125rem' }}
-            className="header-breadcrumb-item"
-          >
-            <span
-              style={{
-                fontWeight: 700,
-                color: 'var(--text-muted)',
-                backgroundColor: 'var(--bg-subtle)',
-                padding: '0.2rem 0.6rem',
-                borderRadius: 'var(--radius-full)',
-                border: '1px solid var(--border)',
-                fontSize: '0.75rem',
-              }}
-            >
-              {pageInfo.path}
-            </span>
-          </div>
         </div>
 
         {/* ── CENTER: full page navigation bar ── */}
@@ -274,13 +231,12 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar: _onToggleSideba
             display: 'flex',
             alignItems: 'center',
             gap: '0.25rem',
-            flex: 1,
             justifyContent: 'center',
             background: 'var(--bg-subtle)',
             padding: '0.25rem 0.4rem',
             borderRadius: 'var(--radius-full)',
             border: '1px solid var(--border)',
-            maxWidth: '660px',
+            flexShrink: 0,
           }}
           aria-label="Main navigation"
         >
@@ -317,7 +273,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar: _onToggleSideba
           })}
         </nav>
 
-        {/* ── RIGHT: theme toggle + search + new rec + bell + user ── */}
+        {/* ── RIGHT: theme toggle + search + bell + user ── */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexShrink: 0 }}>
           
           {/* Theme Toggle Button */}
@@ -381,16 +337,6 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar: _onToggleSideba
               /
             </kbd>
           </button>
-
-          {/* New Recommendation CTA */}
-          <Link
-            to="/recommend"
-            className="btn btn-primary btn-sm"
-            style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.45rem 1rem', whiteSpace: 'nowrap', borderRadius: 'var(--radius-full)' }}
-          >
-            <Sparkles size={14} />
-            <span>New Rec</span>
-          </Link>
 
           {/* Notifications */}
           <div style={{ position: 'relative' }} ref={notifRef}>
